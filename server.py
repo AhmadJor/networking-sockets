@@ -1,22 +1,20 @@
-import socket
+import sys, socket
 
-
-HOST = ""
-PORT = 12345
-
-server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-server.bind((HOST, PORT))
-save_clients = {}
-messages = {}
-
-
-def main():
-    def gtMessage(server, messages, address):
+def gtMessage(server, messages, address):
         if len(messages) == 0:
             server.sendto(b"", address)
             return
         message = "\n".join(messages)
         server.sendto(message.encode(), address)
+        
+
+def main(argv):
+    host = ""
+    port = int(sys.argv[1])
+    server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    server.bind((host, port))
+    save_clients = {}
+    messages = {}
 
     while True:
         data, address = server.recvfrom(1024)
@@ -66,4 +64,4 @@ def main():
             server.sendto(b"Illegal request", address)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
