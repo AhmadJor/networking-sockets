@@ -6,8 +6,8 @@ def gtMessage(server, messages, address):
             return
         message = "\n".join(messages)
         server.sendto(message.encode(), address)
-        
-
+def exist(key,dict):
+    return key in dict
 def main(argv):
     host = ""
     port = int(sys.argv[1])
@@ -32,13 +32,13 @@ def main(argv):
                 messages[name].append(deco + " has joined")
             save_clients[address] = deco
             messages[deco] = []
-        elif number[0] == "2":
+        elif number[0] == "2" and exist(address,save_clients):
             for name in save_clients.values():
                 if name != save_clients[address]:
                     messages[name].append(save_clients[address] + ": " + deco)
             gtMessage(server, messages[save_clients[address]], address)
             messages[save_clients[address]] = []
-        elif number[0] == "3":
+        elif number[0] == "3" and exist(address,save_clients) :
             old_name = save_clients[address]
             save_clients[address] = deco
             messages[deco] = messages[old_name]
@@ -50,14 +50,14 @@ def main(argv):
                 if name != save_clients[address]:
                     messages[name].append(old_name + " changed his name to " + deco)
         #    print(messages, save_clients)
-        elif number[0] == "4":
+        elif number[0] == "4" and exist(address,save_clients):
             messages.pop(save_clients[address])
             left = save_clients[address]
             save_clients.pop(address)
             for name in save_clients.values():
                 messages[name].append(left + " has left the group")
             server.sendto(b"leave", address)
-        elif number[0] == "5":
+        elif number[0] == "5" and exist(address,save_clients):
             gtMessage(server, messages[save_clients[address]], address)
             messages[save_clients[address]] = []
         else:
