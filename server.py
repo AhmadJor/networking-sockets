@@ -1,16 +1,20 @@
 import sys, socket
-
+#send the message to the given client.
+#send an empty message if no messages exists
 def gtMessage(server, messages, address):
         if messages:
             server.sendto(("\n".join(messages)).encode(), address)
             return
         server.sendto(b"", address)
-
+#checks if the port is in the legall intarval (from the lecture)
 def legall_port(port):
-    return port > 1025 and port < 2**16 -1
+    return port > 0 and port <= 2**16
 
+# checks if the key exists in the dictionary
 def exist(key,dict):
     return key in dict
+
+# this method is to append messages belongs to other clients
 def fill_meassge(clients,messages,message,except_name):
     for name in clients.values():
         if name != except_name:
@@ -19,16 +23,19 @@ def fill_meassge(clients,messages,message,except_name):
 def main(argv):
     host = ""
     port = int(sys.argv[1])
+    #here we open a network socket
     server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    #checking if the port is legall if not we close it
     if not legall_port(port):
         print("illegal port")
         server.close()
-
+    #here we bind the tuple (host,port)
     server.bind((host, port))
     clients = {}
     messages = {}
 
     while True:
+        #here we recive 1024 bit of data from clients
         data, address = server.recvfrom(1024)
         command = data.decode("utf-8")
         if len(command) > 1:
